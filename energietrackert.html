@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Energietracker">
+<meta name="theme-color" content="#fdfaf4">
+<title>Energietracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8; --surface: #fdfaf4; --surface2: #f0ebe0; --border: #ddd5c4;
+    --text: #2a2318; --text-muted: #7a6e5f;
+    --accent: #4a7c59; --accent-light: #e8f0eb;
+    --accent2: #c8853a; --accent2-light: #fdf3e7;
+    --danger: #b85c5c; --danger-light: #fceaea;
+    --morning-light: #fef7e6; --evening-light: #eaf0f8;
+    --radius: 14px; --shadow: 0 2px 16px rgba(42,35,24,0.08);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  .app { max-width: 680px; margin: 0 auto; padding: 0 0 calc(80px + var(--safe-bottom)); }
+
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: calc(16px + var(--safe-top)) 20px 12px; position: sticky; top: 0; z-index: 100; }
+  .header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .header h1 { font-family: 'Lora', serif; font-size: 21px; font-weight: 600; }
+  .header-date { font-size: 13px; color: var(--text-muted); }
+  .streak-badge { background: var(--accent2-light); color: var(--accent2); border: 1px solid #f0d0a0; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; margin-left: auto; }
+  .checkin-status { display: flex; gap: 6px; }
+  .status-pill { flex: 1; padding: 8px 10px; border-radius: 10px; font-size: 12px; font-weight: 500; text-align: center; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text-muted); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .status-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .status-pill.done { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+  .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); background: var(--surface); border-top: 1px solid var(--border); display: flex; z-index: 200; width: 100%; max-width: 680px; padding-bottom: var(--safe-bottom); }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 2px 12px; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; color: var(--text-muted); transition: color 0.15s; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn svg { width: 20px; height: 20px; }
+
+  .content { padding: 16px 14px 0; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .card-title { font-family: 'Lora', serif; font-size: 16px; font-weight: 600; }
+  .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); outline: none; transition: border-color 0.15s; -webkit-appearance: none; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { min-height: 72px; resize: vertical; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .field-row .field { margin-bottom: 0; }
+
+  .slider-wrap { position: relative; padding-top: 6px; }
+  .slider-wrap input[type=range] { -webkit-appearance: none; width: 100%; height: 10px; border-radius: 5px; background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct,50%), var(--border) var(--pct,50%)); border: none; padding: 8px 0; cursor: pointer; }
+  .slider-wrap input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip { padding: 8px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 13.5px; cursor: pointer; user-select: none; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
+  .chip.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+  .yn-group { display: flex; gap: 8px; }
+  .yn-btn { flex: 1; padding: 11px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
+  .yn-btn.yes.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .yn-btn.no.active { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+
+  .energy-field { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .energy-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .energy-num.leak { background: var(--danger-light); color: var(--danger); }
+  .energy-field input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
+  .energy-field input:focus { border-color: var(--accent); }
+
+  .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:active { background: #3d6b4a; transform: scale(0.98); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); margin-top: 8px; }
+  .saved-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--accent-light); color: var(--accent); border: 1px solid #b8d9c0; border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 500; margin-top: 10px; }
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+  .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+
+  .affirmation-box { margin-top:14px; background: linear-gradient(135deg,#e8f0eb,#fef7e6); border: 1px solid #c8d8bc; border-radius: 12px; padding: 16px 18px; text-align: center; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  .affirmation-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .affirmation-text { font-family: 'Lora', serif; font-size: 16px; color: var(--text); line-height: 1.5; font-style: italic; }
+
+  .history-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+  .history-date { padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-family: 'Lora', serif; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .history-date .chevron { margin-left: auto; transition: transform 0.2s; }
+  .history-date.open .chevron { transform: rotate(180deg); }
+  .history-body { padding: 14px 16px; display: none; }
+  .history-body.open { display: block; }
+  .history-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+  .history-label { color: var(--text-muted); min-width: 145px; }
+  .history-val { color: var(--text); font-weight: 500; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .tag { padding: 4px 10px; border-radius: 12px; font-size: 12.5px; }
+  .tag.green { background: var(--accent-light); color: var(--accent); }
+  .tag.red { background: var(--danger-light); color: var(--danger); }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 10px; text-align: center; }
+  .stat-val { font-family: 'Lora', serif; font-size: 22px; font-weight: 600; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  .heatmap-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+  .heatmap-title { font-family: 'Lora', serif; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .heatmap-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .heatmap-day { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); }
+  .heatmap-day.l1 { background:#c8e6d0;border-color:#a0cbb0; }
+  .heatmap-day.l2 { background:#8fcca0;border-color:#6aaf80; }
+  .heatmap-day.l3 { background:#5aaa72;border-color:#3d8a55;color:white; }
+  .heatmap-day.l4 { background:#2d7a48;border-color:#1d5a32;color:white; }
+  .heatmap-legend { display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--text-muted); }
+  .heatmap-swatch { width:14px;height:14px;border-radius:3px; }
+
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+  .chart-title { font-family: 'Lora', serif; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+
+  .week-summary { font-size: 14.5px; line-height: 1.75; }
+  .week-summary h3 { font-family:'Lora',serif;font-size:16px;margin:14px 0 6px;color:var(--accent); }
+  .week-summary h3:first-child { margin-top:0; }
+  .week-summary p { margin-bottom:8px; }
+
+  .loading-dots span { display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bounce 1.2s infinite ease-in-out; }
+  .loading-dots span:nth-child(2){animation-delay:.2s}
+  .loading-dots span:nth-child(3){animation-delay:.4s}
+  @keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+  .notif-row { display:flex;align-items:center;gap:10px;margin-bottom:10px; }
+  .notif-row label { flex:1;font-size:14px; }
+  .notif-row input[type=time] { width:120px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none; }
+
+  .api-key-wrap { position:relative; }
+  .api-key-wrap input { padding-right: 44px; }
+  .api-key-toggle { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted); }
+
+  .install-banner { background: linear-gradient(135deg, #e8f0eb, #eaf0f8); border: 1px solid #c0d4e0; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px; }
+  .install-banner h3 { font-family:'Lora',serif;font-size:15px;font-weight:600;margin-bottom:8px; }
+  .install-steps { list-style:none;counter-reset:steps; }
+  .install-steps li { counter-increment:steps;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:14px; }
+  .install-steps li::before { content:counter(steps);background:var(--accent);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px; }
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
+  .empty-state .emoji{font-size:40px;margin-bottom:12px;}
+  .toast{position:fixed;bottom:calc(80px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:all 0.3s;z-index:999;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @media(max-width:400px){.field-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <h1>Energietracker</h1>
+      <span class="header-date" id="headerDate"></span>
+      <span class="streak-badge" id="streakBadge">🔥 0 dagen</span>
+    </div>
+    <div class="checkin-status">
+      <div class="status-pill" id="morningStatus" onclick="showSection('morning')">🌅 Ochtend</div>
+      <div class="status-pill" id="eveningStatus" onclick="showSection('evening')">🌙 Avond</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OCHTEND -->
+    <div class="section active" id="sec-morning">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--morning-light)">🌅</div>
+          <div><div class="card-title">Ochtendcheck-in</div><div class="card-subtitle">Hoe was je nacht?</div></div>
+        </div>
+
+        <div class="field-row">
+          <div class="field"><label>Bedtijd</label><input type="time" id="bedtime" value="23:00"></div>
+          <div class="field"><label>Uren geslapen</label><input type="number" id="sleepHours" min="0" max="14" step="0.5" placeholder="7.5"></div>
+        </div>
+
+        <div class="field">
+          <label>Batterij-% (slaap-app) — <span id="batteryDisplay">75%</span></label>
+          <div class="slider-wrap"><input type="range" id="batterySlider" min="0" max="100" value="75" oninput="updateSlider('batterySlider','batteryDisplay',this.value,'%')"></div>
+        </div>
+
+        <div class="field"><label>Gewicht (kg)</label><input type="number" id="weight" min="30" max="250" step="0.1" placeholder="bijv. 78.4"></div>
+
+        <div class="field">
+          <label>Wakker geworden door</label>
+          <div class="chip-group" id="wakeReason">
+            <div class="chip" onclick="toggleChip(this,'wakeReason')">⏰ Wekker</div>
+            <div class="chip" onclick="toggleChip(this,'wakeReason')">😴 Vanzelf</div>
+            <div class="chip" onclick="toggleChip(this,'wakeReason')">🌙 Midden in de nacht</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Gevoel bij het wakker worden</label>
+          <div class="chip-group" id="wakeFeeling">
+            <div class="chip" onclick="toggleChip(this,'wakeFeeling')">😴 Uitgeput</div>
+            <div class="chip" onclick="toggleChip(this,'wakeFeeling')">😐 Matig</div>
+            <div class="chip" onclick="toggleChip(this,'wakeFeeling')">🙂 Redelijk</div>
+            <div class="chip" onclick="toggleChip(this,'wakeFeeling')">😊 Uitgerust</div>
+            <div class="chip" onclick="toggleChip(this,'wakeFeeling')">⚡ Energiek</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Koppen koffie / cafeïne — <span id="coffeeDisplay">0</span></label>
+          <div class="slider-wrap"><input type="range" id="coffeeSlider" min="0" max="8" value="0" step="1" oninput="updateSlider('coffeeSlider','coffeeDisplay',this.value,'')"></div>
+        </div>
+
+        <div class="field"><label>Notities (optioneel)</label><textarea id="morningNotes" placeholder="Dromen, gedachten bij het wakker worden..."></textarea></div>
+
+        <button class="btn btn-primary" onclick="saveMorning()">✓ Ochtendcheck-in opslaan</button>
+        <div id="morningSavedMsg" style="display:none">
+          <div class="saved-badge">✓ Opgeslagen voor vandaag</div>
+          <div class="affirmation-box">
+            <div class="affirmation-label">✨ Voor vandaag</div>
+            <div class="affirmation-text" id="affirmationText"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVOND -->
+    <div class="section" id="sec-evening">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--evening-light)">🌙</div>
+          <div><div class="card-title">Avondcheck-in</div><div class="card-subtitle">Hoe was je dag?</div></div>
+        </div>
+
+        <div class="field"><label>Beweging & activiteiten</label>
+          <div class="chip-group" id="activities">
+            <div class="chip" onclick="toggleChip(this,'activities')">🚴 Fietsen</div>
+            <div class="chip" onclick="toggleChip(this,'activities')">🧘 Oefeningen</div>
+            <div class="chip" onclick="toggleChip(this,'activities')">🚶 Wandelen</div>
+            <div class="chip" onclick="toggleChip(this,'activities')">🏊 Zwemmen</div>
+            <div class="chip" onclick="toggleChip(this,'activities')">💤 Geen beweging</div>
+          </div>
+        </div>
+
+        <div class="field"><label>Werklocatie</label>
+          <div class="chip-group" id="workLocation">
+            <div class="chip" onclick="toggleChip(this,'workLocation')">🏠 Thuisgewerkt</div>
+            <div class="chip" onclick="toggleChip(this,'workLocation')">🏢 Bij FLX</div>
+          </div>
+        </div>
+
+        <div class="field"><label>Buiten geweest?</label><div class="yn-group" id="outside"><div class="yn-btn yes" onclick="toggleYN('outside','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('outside','no')">✗ Nee</div></div></div>
+
+        <div class="field"><label>Sociaal contact</label>
+          <div class="chip-group" id="social">
+            <div class="chip" onclick="toggleChip(this,'social')">🧍 Alleen</div>
+            <div class="chip" onclick="toggleChip(this,'social')">💼 Collega's</div>
+            <div class="chip" onclick="toggleChip(this,'social')">👥 Vrienden/familie</div>
+            <div class="chip" onclick="toggleChip(this,'social')">🔀 Combinatie</div>
+          </div>
+        </div>
+
+        <div class="field"><label>Gezond gegeten?</label><div class="yn-group" id="healthyEating"><div class="yn-btn yes" onclick="toggleYN('healthyEating','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('healthyEating','no')">✗ Nee</div></div></div>
+        <div class="field"><label>Alcohol gedronken?</label><div class="yn-group" id="alcohol"><div class="yn-btn yes" onclick="toggleYN('alcohol','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('alcohol','no')">✗ Nee</div></div></div>
+        <div class="field"><label>Gerookt?</label><div class="yn-group" id="smoking"><div class="yn-btn yes" onclick="toggleYN('smoking','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('smoking','no')">✗ Nee</div></div></div>
+        <div class="field"><label>Cafeïne na 14:00?</label><div class="yn-group" id="lateCaffeine"><div class="yn-btn yes" onclick="toggleYN('lateCaffeine','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('lateCaffeine','no')">✗ Nee</div></div></div>
+
+        <div class="field"><label>Schermtijd (uren)</label><input type="number" id="screenTime" min="0" max="24" step="0.5" placeholder="bijv. 4.5"></div>
+
+        <div class="field"><label>Stemming aan het eind van de dag</label>
+          <div class="chip-group" id="mood">
+            <div class="chip" onclick="toggleChip(this,'mood')">😔 Leeg</div>
+            <div class="chip" onclick="toggleChip(this,'mood')">😐 Neutraal</div>
+            <div class="chip" onclick="toggleChip(this,'mood')">🙂 Oké</div>
+            <div class="chip" onclick="toggleChip(this,'mood')">😊 Goed</div>
+            <div class="chip" onclick="toggleChip(this,'mood')">🌟 Top!</div>
+          </div>
+        </div>
+
+        <div class="field"><label>Stressniveau — <span id="stressDisplay">5</span>/10</label>
+          <div class="slider-wrap"><input type="range" id="stressSlider" min="1" max="10" value="5" oninput="updateSlider('stressSlider','stressDisplay',this.value,'')"></div>
+        </div>
+
+        <div class="field"><label>Productiviteitsgevoel — <span id="productivityDisplay">5</span>/10</label>
+          <div class="slider-wrap"><input type="range" id="productivitySlider" min="1" max="10" value="5" oninput="updateSlider('productivitySlider','productivityDisplay',this.value,'')"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--accent-light)">✨</div>
+          <div><div class="card-title">Energiebronnen</div><div class="card-subtitle">Wat gaf je energie of ging goed?</div></div>
+        </div>
+        <p class="hint">Niet alle drie zijn verplicht.</p>
+        <div class="energy-field"><div class="energy-num">1</div><input type="text" id="energy1" placeholder="Wat gaf je energie vandaag?"></div>
+        <div class="energy-field"><div class="energy-num">2</div><input type="text" id="energy2" placeholder="Wat ging er goed?"></div>
+        <div class="energy-field"><div class="energy-num">3</div><input type="text" id="energy3" placeholder="Nog iets positiefs..."></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--danger-light)">🔋</div>
+          <div><div class="card-title">Energielekken</div><div class="card-subtitle">Wat kostte je energie?</div></div>
+        </div>
+        <p class="hint">Niet alle drie zijn verplicht.</p>
+        <div class="energy-field"><div class="energy-num leak">1</div><input type="text" id="leak1" placeholder="Wat kostte je energie?"></div>
+        <div class="energy-field"><div class="energy-num leak">2</div><input type="text" id="leak2" placeholder="Wat voelde zwaar?"></div>
+        <div class="energy-field"><div class="energy-num leak">3</div><input type="text" id="leak3" placeholder="Nog iets dat energie kostte..."></div>
+      </div>
+
+      <div class="card">
+        <div class="field"><label>Vrije reflectie</label><textarea id="eveningNotes" placeholder="Inzichten, gedachten, intenties voor morgen..."></textarea></div>
+        <button class="btn btn-primary" onclick="saveEvening()">✓ Avondcheck-in opslaan</button>
+        <div id="eveningSavedMsg" style="display:none"><div class="saved-badge">✓ Opgeslagen voor vandaag</div></div>
+      </div>
+    </div>
+
+    <!-- LOGBOEK -->
+    <div class="section" id="sec-history">
+      <div id="statsArea"></div>
+      <div id="heatmapArea"></div>
+      <div id="weightChartArea"></div>
+      <div id="historyList"></div>
+    </div>
+
+    <!-- RAPPORT -->
+    <div class="section" id="sec-week">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--accent2-light)">📊</div>
+          <div><div class="card-title">Weekrapport</div><div class="card-subtitle">AI-analyse van jouw patronen</div></div>
+        </div>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px">Claude analyseert je check-ins en benoemt concrete correlaties en patronen.</p>
+        <div class="field"><label>Periode</label>
+          <select id="weekRange">
+            <option value="7">Laatste 7 dagen</option>
+            <option value="14">Laatste 14 dagen</option>
+            <option value="30">Laatste 30 dagen</option>
+            <option value="all">Alle data</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="generateWeekReport()">✨ Genereer rapport</button>
+        <p id="noApiMsg" style="display:none;margin-top:10px;font-size:13px;color:var(--danger)">⚠️ Voer eerst een API-sleutel in via Instellingen om het rapport te gebruiken.</p>
+      </div>
+      <div id="weekReportArea"></div>
+    </div>
+
+    <!-- INSTELLINGEN -->
+    <div class="section" id="sec-settings">
+
+      <div class="install-banner">
+        <h3>📲 Op je iPhone zetten</h3>
+        <ol class="install-steps">
+          <li>Open dit bestand in <strong>Safari</strong> (niet Chrome)</li>
+          <li>Tik op het <strong>deelicoon</strong> (vierkantje met pijl omhoog)</li>
+          <li>Scroll naar beneden en tik op <strong>"Zet op beginscherm"</strong></li>
+          <li>Geef het een naam en tik op <strong>Voeg toe</strong></li>
+        </ol>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:8px">De app opent dan volledig schermvullend, zonder Safari-balk.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--accent2-light)">🔑</div>
+          <div><div class="card-title">Anthropic API-sleutel</div><div class="card-subtitle">Vereist voor het weekrapport</div></div>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Haal je sleutel op via <strong>console.anthropic.com</strong> → API Keys. Begint met <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">sk-ant-</code></p>
+        <div class="field">
+          <label>API-sleutel</label>
+          <div class="api-key-wrap">
+            <input type="password" id="apiKey" placeholder="sk-ant-...">
+            <button class="api-key-toggle" onclick="toggleApiVisibility()">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveApiKey()">Opslaan</button>
+        <p id="apiStatus" style="font-size:13px;color:var(--text-muted);margin-top:8px"></p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--surface2)">🔔</div>
+          <div><div class="card-title">Herinneringen</div><div class="card-subtitle">Browsernotificaties (Safari op Mac)</div></div>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">⚠️ iOS Safari ondersteunt geen pushnotificaties. Op de Mac werkt dit wel.</p>
+        <div class="notif-row"><label>🌅 Ochtendherinnering</label><input type="time" id="morningNotifTime" value="07:30"></div>
+        <div class="notif-row"><label>🌙 Avondherinnering</label><input type="time" id="eveningNotifTime" value="21:00"></div>
+        <button class="btn btn-primary" onclick="saveNotifSettings()" style="margin-top:6px">Opslaan & activeren</button>
+        <p id="notifStatus" style="font-size:13px;color:var(--text-muted);margin-top:10px"></p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--surface2)">💾</div>
+          <div><div class="card-title">Data</div></div>
+        </div>
+        <button class="btn btn-secondary" onclick="exportJSON()">📥 Exporteer als JSON</button>
+        <button class="btn btn-secondary" onclick="exportCSV()">📊 Exporteer als CSV</button>
+        <button class="btn btn-secondary" style="color:var(--danger);border-color:var(--danger);margin-top:16px" onclick="clearData()">🗑 Alle data wissen</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" id="nav-morning" onclick="showSection('morning')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    Ochtend
+  </button>
+  <button class="nav-btn" id="nav-evening" onclick="showSection('evening')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    Avond
+  </button>
+  <button class="nav-btn" id="nav-history" onclick="showSection('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Logboek
+  </button>
+  <button class="nav-btn" id="nav-week" onclick="showSection('week')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Rapport
+  </button>
+  <button class="nav-btn" id="nav-settings" onclick="showSection('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Instellingen
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STORAGE (localStorage) ────────────────────────────────────────────────────
+function getData() { try { return JSON.parse(localStorage.getItem('et_data')||'{}'); } catch { return {}; } }
+function setData(d) { localStorage.setItem('et_data', JSON.stringify(d)); }
+function getSettings() { try { return JSON.parse(localStorage.getItem('et_settings')||'{}'); } catch { return {}; } }
+function saveSettings(s) { localStorage.setItem('et_settings', JSON.stringify(s)); }
+function getApiKey() { return localStorage.getItem('et_apikey')||''; }
+function storeApiKey(k) { localStorage.setItem('et_apikey', k); }
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function today() { return new Date().toISOString().slice(0,10); }
+function dutchDate(d) {
+  const days=['zo','ma','di','wo','do','vr','za'],months=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+  const dt=new Date(d+'T12:00:00'); return `${days[dt.getDay()]} ${dt.getDate()} ${months[dt.getMonth()]}`;
+}
+function dutchDateLong(d) {
+  const days=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],months=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  const dt=new Date(d+'T12:00:00'); return `${days[dt.getDay()]} ${dt.getDate()} ${months[dt.getMonth()]}`;
+}
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ─── AFFIRMATIONS ─────────────────────────────────────────────────────────────
+const AFFIRMATIONS = [
+  "Elke dag is een nieuwe kans om de beste versie van jezelf te zijn.",
+  "Jij hebt al zo veel overwonnen. Vandaag is geen uitzondering.",
+  "Kleine stappen tellen ook. Vooruit is vooruit.",
+  "Je energie is kostbaar — gebruik hem voor wat er echt toe doet.",
+  "Goed voor jezelf zorgen is geen luxe, het is noodzaak.",
+  "Rust is ook productief. Je mag opladen.",
+  "Jij bepaalt het tempo van je eigen dag.",
+  "Wat je aandacht geeft, groeit. Kies vandaag bewust.",
+  "Je bent verder dan je gisteren was.",
+  "Vertrouw op het proces, ook op de moeilijke dagen.",
+  "Elke goede gewoonte die je opbouwt, is een cadeau aan je toekomstige zelf.",
+  "Je hoeft vandaag niet perfect te zijn. Gewoon aanwezig.",
+  "Kracht groeit in de momenten dat je het moeilijk hebt maar toch doorgaat.",
+  "Je bent precies goed genoeg, precies zoals je nu bent.",
+  "Adem in. Vandaag mag je beginnen met een schone lei.",
+  "Beweging is medicijn. Zelfs één stap telt.",
+  "Wat je vandaag inzaait, oogst je morgen.",
+  "Rust en actie zijn allebei onderdeel van de weg vooruit.",
+  "Je gedachten vormen je dag — begin positief.",
+  "Wees zo aardig voor jezelf als je zou zijn voor een goede vriend.",
+  "Elke ochtend wakker worden is een tweede kans.",
+  "Focussen op wat je wél kunt beïnvloeden geeft kracht.",
+  "Jij bent degene die het verschil maakt in jouw eigen leven.",
+  "Groei is niet lineair. Golfbewegingen horen erbij.",
+  "Vandaag hoef je maar één ding goed te doen.",
+  "Je lichaam vertelt je iets. Luister ernaar.",
+  "Dankbaarheid opent de deur voor meer mooie dingen.",
+  "De moeite die je neemt voor jezelf, zie je terug in alles wat je doet.",
+  "Jij bent sterker dan de dag van gisteren.",
+  "Vandaag is een nieuwe pagina. Schrijf iets moois."
+];
+function showAffirmation() {
+  const seed = parseInt(today().replace(/-/g,'')) % AFFIRMATIONS.length;
+  document.getElementById('affirmationText').textContent = AFFIRMATIONS[seed];
+}
+
+// ─── SLIDERS ─────────────────────────────────────────────────────────────────
+function updateSlider(sid,did,val,suffix) {
+  document.getElementById(did).textContent=val+suffix;
+  const el=document.getElementById(sid);
+  el.style.setProperty('--pct',((val-el.min)/(el.max-el.min)*100)+'%');
+}
+function initSlider(sid,did,val,suffix) { document.getElementById(sid).value=val; updateSlider(sid,did,val,suffix); }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('headerDate').textContent = dutchDateLong(today());
+  initSlider('batterySlider','batteryDisplay',75,'%');
+  initSlider('coffeeSlider','coffeeDisplay',0,'');
+  initSlider('stressSlider','stressDisplay',5,'');
+  initSlider('productivitySlider','productivityDisplay',5,'');
+  loadTodayState();
+  updateStreakBadge();
+  loadSettings();
+  loadApiKey();
+  scheduleNotifCheck();
+});
+
+function loadTodayState() {
+  const data=getData(), entry=data[today()];
+  if (!entry) return;
+  if (entry.morning) {
+    const m=entry.morning;
+    if (m.bedtime) document.getElementById('bedtime').value=m.bedtime;
+    if (m.sleepHours) document.getElementById('sleepHours').value=m.sleepHours;
+    if (m.weight) document.getElementById('weight').value=m.weight;
+    if (m.battery!=null){document.getElementById('batterySlider').value=m.battery;updateSlider('batterySlider','batteryDisplay',m.battery,'%');}
+    if (m.coffee!=null){document.getElementById('coffeeSlider').value=m.coffee;updateSlider('coffeeSlider','coffeeDisplay',m.coffee,'');}
+    if (m.notes) document.getElementById('morningNotes').value=m.notes;
+    if (m.wakeFeeling) setChip('wakeFeeling',m.wakeFeeling);
+    if (m.wakeReason) setChip('wakeReason',m.wakeReason);
+    document.getElementById('morningSavedMsg').style.display='block';
+    showAffirmation();
+    markDone('morningStatus','✓ Ochtend');
+  }
+  if (entry.evening) {
+    const ev=entry.evening;
+    if (ev.screenTime) document.getElementById('screenTime').value=ev.screenTime;
+    ['energy1','energy2','energy3','leak1','leak2','leak3','eveningNotes'].forEach(id=>{if(ev[id])document.getElementById(id).value=ev[id];});
+    if (ev.stress!=null){document.getElementById('stressSlider').value=ev.stress;updateSlider('stressSlider','stressDisplay',ev.stress,'');}
+    if (ev.productivity!=null){document.getElementById('productivitySlider').value=ev.productivity;updateSlider('productivitySlider','productivityDisplay',ev.productivity,'');}
+    if (ev.activities) ev.activities.forEach(a=>setChip('activities',a,true));
+    if (ev.workLocation) setChip('workLocation',ev.workLocation);
+    if (ev.social) setChip('social',ev.social);
+    if (ev.mood) setChip('mood',ev.mood);
+    if (ev.healthyEating!=null) toggleYN('healthyEating',ev.healthyEating?'yes':'no');
+    if (ev.alcohol!=null) toggleYN('alcohol',ev.alcohol?'yes':'no');
+    if (ev.smoking!=null) toggleYN('smoking',ev.smoking?'yes':'no');
+    if (ev.outside!=null) toggleYN('outside',ev.outside?'yes':'no');
+    if (ev.lateCaffeine!=null) toggleYN('lateCaffeine',ev.lateCaffeine?'yes':'no');
+    document.getElementById('eveningSavedMsg').style.display='block';
+    markDone('eveningStatus','✓ Avond');
+  }
+}
+
+function markDone(id,text){const el=document.getElementById(id);el.classList.add('done');el.textContent=text;}
+
+function updateStreakBadge() {
+  const data=getData(); let streak=0; const now=new Date(today());
+  for (let i=0;i<365;i++){
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    const k=d.toISOString().slice(0,10);
+    if (data[k]&&(data[k].morning||data[k].evening)) streak++; else if(i>0) break;
+  }
+  document.getElementById('streakBadge').textContent=`🔥 ${streak} dag${streak!==1?'en':''}`;
+}
+
+function loadSettings() {
+  const s=getSettings();
+  if (s.morningTime) document.getElementById('morningNotifTime').value=s.morningTime;
+  if (s.eveningTime) document.getElementById('eveningNotifTime').value=s.eveningTime;
+  if (s.enabled) document.getElementById('notifStatus').textContent=`✓ Actief: 🌅 ${s.morningTime} en 🌙 ${s.eveningTime}`;
+}
+
+function loadApiKey() {
+  const k=getApiKey();
+  if (k) { document.getElementById('apiKey').value=k; document.getElementById('apiStatus').textContent='✓ API-sleutel opgeslagen'; }
+}
+
+// ─── CHIPS / TOGGLES ─────────────────────────────────────────────────────────
+function toggleChip(el,gid) {
+  const multi=gid==='activities';
+  if (!multi){document.querySelectorAll(`#${gid} .chip`).forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+  else el.classList.toggle('active');
+}
+function setChip(gid,val,multi=false) { document.querySelectorAll(`#${gid} .chip`).forEach(c=>{if(c.textContent.trim()===val)c.classList.add('active');}); }
+function toggleYN(gid,val) { document.getElementById(gid).querySelectorAll('.yn-btn').forEach(b=>b.classList.remove('active')); document.getElementById(gid).querySelector('.'+val).classList.add('active'); }
+function getYN(gid) { const g=document.getElementById(gid); if(g.querySelector('.yes').classList.contains('active'))return true; if(g.querySelector('.no').classList.contains('active'))return false; return null; }
+function getChip(gid) { const el=document.querySelector(`#${gid} .chip.active`); return el?el.textContent.trim():null; }
+function getChips(gid) { return[...document.querySelectorAll(`#${gid} .chip.active`)].map(c=>c.textContent.trim()); }
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  if (id==='history') renderHistory();
+}
+
+// ─── SAVE ─────────────────────────────────────────────────────────────────────
+function saveMorning() {
+  const d=getData(); if(!d[today()]) d[today()]={};
+  d[today()].morning={
+    bedtime:document.getElementById('bedtime').value,
+    sleepHours:parseFloat(document.getElementById('sleepHours').value)||null,
+    weight:parseFloat(document.getElementById('weight').value)||null,
+    battery:parseInt(document.getElementById('batterySlider').value),
+    coffee:parseInt(document.getElementById('coffeeSlider').value),
+    wakeReason:getChip('wakeReason'), wakeFeeling:getChip('wakeFeeling'),
+    notes:document.getElementById('morningNotes').value.trim()
+  };
+  setData(d);
+  document.getElementById('morningSavedMsg').style.display='block';
+  showAffirmation();
+  markDone('morningStatus','✓ Ochtend');
+  showToast('Ochtendcheck-in opgeslagen ✓');
+  updateStreakBadge();
+}
+
+function saveEvening() {
+  const d=getData(); if(!d[today()]) d[today()]={};
+  d[today()].evening={
+    activities:getChips('activities'), workLocation:getChip('workLocation'),
+    outside:getYN('outside'), social:getChip('social'),
+    healthyEating:getYN('healthyEating'), alcohol:getYN('alcohol'),
+    smoking:getYN('smoking'), lateCaffeine:getYN('lateCaffeine'),
+    screenTime:parseFloat(document.getElementById('screenTime').value)||null,
+    mood:getChip('mood'),
+    stress:parseInt(document.getElementById('stressSlider').value),
+    productivity:parseInt(document.getElementById('productivitySlider').value),
+    energy1:document.getElementById('energy1').value.trim(),
+    energy2:document.getElementById('energy2').value.trim(),
+    energy3:document.getElementById('energy3').value.trim(),
+    leak1:document.getElementById('leak1').value.trim(),
+    leak2:document.getElementById('leak2').value.trim(),
+    leak3:document.getElementById('leak3').value.trim(),
+    eveningNotes:document.getElementById('eveningNotes').value.trim()
+  };
+  setData(d);
+  document.getElementById('eveningSavedMsg').style.display='block';
+  markDone('eveningStatus','✓ Avond');
+  showToast('Avondcheck-in opgeslagen ✓');
+  updateStreakBadge();
+}
+
+// ─── HISTORY ─────────────────────────────────────────────────────────────────
+function renderHistory() {
+  const data=getData(), keys=Object.keys(data).sort().reverse();
+  const sleepVals=keys.filter(k=>data[k].morning?.sleepHours).map(k=>data[k].morning.sleepHours);
+  const avgSleep=sleepVals.length?(sleepVals.reduce((a,b)=>a+b,0)/sleepVals.length).toFixed(1):'–';
+  document.getElementById('statsArea').innerHTML=`<div class="stats-grid">
+    <div class="stat-box"><div class="stat-val">${keys.length}</div><div class="stat-label">Dagen</div></div>
+    <div class="stat-box"><div class="stat-val">${avgSleep}u</div><div class="stat-label">Gem. slaap</div></div>
+    <div class="stat-box"><div class="stat-val">${keys.filter(k=>data[k].evening).length}</div><div class="stat-label">Avond-ins</div></div>
+  </div>`;
+
+  renderHeatmap(data);
+  renderWeightChart(data,keys);
+
+  if (!keys.length){document.getElementById('historyList').innerHTML=`<div class="empty-state"><div class="emoji">📓</div><p>Nog geen check-ins.</p></div>`;return;}
+
+  document.getElementById('historyList').innerHTML=keys.map(date=>{
+    const e=data[date],m=e.morning,ev=e.evening;
+    const mRows=m?`
+      <div class="history-row"><span class="history-label">🛏 Bedtijd</span><span class="history-val">${m.bedtime||'–'}</span></div>
+      <div class="history-row"><span class="history-label">😴 Geslapen</span><span class="history-val">${m.sleepHours?m.sleepHours+'u':'–'}</span></div>
+      <div class="history-row"><span class="history-label">⚖️ Gewicht</span><span class="history-val">${m.weight?m.weight+' kg':'–'}</span></div>
+      <div class="history-row"><span class="history-label">🔋 Batterij</span><span class="history-val">${m.battery!=null?m.battery+'%':'–'}</span></div>
+      <div class="history-row"><span class="history-label">☕ Koffie</span><span class="history-val">${m.coffee!=null?m.coffee+' kop(pen)':'–'}</span></div>
+      ${m.wakeReason?`<div class="history-row"><span class="history-label">⏰ Wakker door</span><span class="history-val">${m.wakeReason}</span></div>`:''}
+      ${m.wakeFeeling?`<div class="history-row"><span class="history-label">⚡ Gevoel</span><span class="history-val">${m.wakeFeeling}</span></div>`:''}
+    `:'<p style="color:var(--text-muted);font-size:13px">Geen ochtendcheck-in</p>';
+    const energies=ev?[ev.energy1,ev.energy2,ev.energy3].filter(Boolean):[];
+    const leaks=ev?[ev.leak1,ev.leak2,ev.leak3].filter(Boolean):[];
+    const evRows=ev?`<div class="divider"></div>
+      ${ev.activities?.length?`<div class="history-row"><span class="history-label">🏃 Activiteiten</span><span class="history-val">${ev.activities.join(', ')}</span></div>`:''}
+      ${ev.workLocation?`<div class="history-row"><span class="history-label">💼 Werklocatie</span><span class="history-val">${ev.workLocation}</span></div>`:''}
+      ${ev.outside!=null?`<div class="history-row"><span class="history-label">🌳 Buiten</span><span class="history-val">${ev.outside?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.social?`<div class="history-row"><span class="history-label">👥 Sociaal</span><span class="history-val">${ev.social}</span></div>`:''}
+      ${ev.healthyEating!=null?`<div class="history-row"><span class="history-label">🥗 Gezond gegeten</span><span class="history-val">${ev.healthyEating?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.alcohol!=null?`<div class="history-row"><span class="history-label">🍷 Alcohol</span><span class="history-val">${ev.alcohol?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.smoking!=null?`<div class="history-row"><span class="history-label">🚬 Gerookt</span><span class="history-val">${ev.smoking?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.lateCaffeine!=null?`<div class="history-row"><span class="history-label">☕ Cafeïne na 14u</span><span class="history-val">${ev.lateCaffeine?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.screenTime?`<div class="history-row"><span class="history-label">📱 Schermtijd</span><span class="history-val">${ev.screenTime}u</span></div>`:''}
+      ${ev.mood?`<div class="history-row"><span class="history-label">😊 Stemming</span><span class="history-val">${ev.mood}</span></div>`:''}
+      ${ev.stress!=null?`<div class="history-row"><span class="history-label">😰 Stress</span><span class="history-val">${ev.stress}/10</span></div>`:''}
+      ${ev.productivity!=null?`<div class="history-row"><span class="history-label">🎯 Productiviteit</span><span class="history-val">${ev.productivity}/10</span></div>`:''}
+      ${energies.length?`<div style="margin-top:8px"><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">✨ Energiebronnen</div><div class="tag-list">${energies.map(i=>`<span class="tag green">${i}</span>`).join('')}</div></div>`:''}
+      ${leaks.length?`<div style="margin-top:8px"><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">🔋 Energielekken</div><div class="tag-list">${leaks.map(i=>`<span class="tag red">${i}</span>`).join('')}</div></div>`:''}
+      ${ev.eveningNotes?`<div class="history-row" style="margin-top:8px"><span class="history-label">📝 Notitie</span><span class="history-val">${ev.eveningNotes}</span></div>`:''}
+    `:'<p style="color:var(--text-muted);font-size:13px;margin-top:8px">Geen avondcheck-in</p>';
+    return `<div class="history-entry">
+      <div class="history-date" onclick="toggleHistory(this)">
+        ${dutchDate(date)} <span style="font-size:12px;color:var(--text-muted)">${[m?'🌅':'',ev?'🌙':''].filter(Boolean).join(' ')}</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="history-body">${mRows}${evRows}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleHistory(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open');}
+
+// ─── HEATMAP ─────────────────────────────────────────────────────────────────
+function renderHeatmap(data) {
+  const days=[]; const now=new Date(today());
+  for(let i=34;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);days.push(d.toISOString().slice(0,10));}
+  const cells=days.map(d=>{
+    const e=data[d];let s=0;
+    if(e){if(e.morning)s++;if(e.evening)s++;if(e.morning?.sleepHours>=7)s++;if(e.evening?.healthyEating)s++;if(e.evening?.activities?.length&&!e.evening.activities.includes('💤 Geen beweging'))s++;}
+    const l=s===0?0:s<=1?1:s<=2?2:s<=3?3:4;
+    return `<div class="heatmap-day l${l}" title="${dutchDate(d)}">${new Date(d+'T12:00').getDate()}</div>`;
+  }).join('');
+  document.getElementById('heatmapArea').innerHTML=`<div class="heatmap-wrap">
+    <div class="heatmap-title">📅 Activiteit — laatste 35 dagen</div>
+    <div class="heatmap-grid">${cells}</div>
+    <div class="heatmap-legend">Weinig
+      <div class="heatmap-swatch" style="background:var(--surface2);border:1px solid var(--border)"></div>
+      <div class="heatmap-swatch" style="background:#c8e6d0"></div>
+      <div class="heatmap-swatch" style="background:#8fcca0"></div>
+      <div class="heatmap-swatch" style="background:#5aaa72"></div>
+      <div class="heatmap-swatch" style="background:#2d7a48"></div> Veel
+    </div>
+  </div>`;
+}
+
+// ─── WEIGHT CHART ─────────────────────────────────────────────────────────────
+function renderWeightChart(data,keys) {
+  const pts=keys.filter(k=>data[k].morning?.weight).map(k=>({date:k,w:data[k].morning.weight})).slice(0,60).reverse();
+  if(pts.length<2){document.getElementById('weightChartArea').innerHTML='';return;}
+  const W=600,H=160,px=40,py=20;
+  const ws=pts.map(p=>p.w),mn=Math.min(...ws)-0.5,mx=Math.max(...ws)+0.5;
+  const xS=i=>px+(i/(pts.length-1))*(W-px*2);
+  const yS=v=>H-py-((v-mn)/(mx-mn))*(H-py*2);
+  const poly=pts.map((p,i)=>`${xS(i)},${yS(p.w)}`).join(' ');
+  const grids=[0,.5,1].map(f=>{const v=mn+f*(mx-mn),y=yS(v);return`<line x1="${px}" y1="${y}" x2="${W-px}" y2="${y}" stroke="#e0d8cc" stroke-width="1"/><text x="${px-4}" y="${y+4}" text-anchor="end" font-size="10" fill="#7a6e5f">${v.toFixed(1)}</text>`;}).join('');
+  const dots=pts.map((p,i)=>`<circle cx="${xS(i)}" cy="${yS(p.w)}" r="4" fill="#4a7c59" stroke="white" stroke-width="2"/>`).join('');
+  const lbls=pts.filter((_,i)=>i===0||i===pts.length-1||(pts.length<=10)).map(p=>{const i=pts.indexOf(p);return`<text x="${xS(i)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#7a6e5f">${dutchDate(p.date).slice(3)}</text>`;}).join('');
+  document.getElementById('weightChartArea').innerHTML=`<div class="chart-wrap">
+    <div class="chart-title">⚖️ Gewichtsverloop</div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;overflow:visible">${grids}<polyline points="${poly}" fill="none" stroke="#4a7c59" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${dots}${lbls}</svg>
+  </div>`;
+}
+
+// ─── WEEK REPORT ─────────────────────────────────────────────────────────────
+async function generateWeekReport() {
+  const apiKey=getApiKey();
+  if (!apiKey) { document.getElementById('noApiMsg').style.display='block'; return; }
+  document.getElementById('noApiMsg').style.display='none';
+  const area=document.getElementById('weekReportArea');
+  area.innerHTML=`<div class="card" style="text-align:center;padding:30px"><div class="loading-dots"><span></span><span></span><span></span></div><p style="margin-top:12px;color:var(--text-muted);font-size:14px">Claude analyseert je check-ins...</p></div>`;
+
+  const days=parseInt(document.getElementById('weekRange').value)||9999;
+  const data=getData();
+  const cutoff=new Date(today());cutoff.setDate(cutoff.getDate()-days);
+  const entries=Object.entries(data).filter(([d])=>new Date(d)>=cutoff).sort(([a],[b])=>a.localeCompare(b));
+  if(!entries.length){area.innerHTML=`<div class="card"><p style="color:var(--text-muted)">Geen data gevonden.</p></div>`;return;}
+
+  const formatted=entries.map(([date,e])=>{
+    const parts=[`📅 ${dutchDateLong(date)}`];
+    if(e.morning){const m=e.morning;parts.push(`Ochtend: slaap ${m.sleepHours||'?'}u, bedtijd ${m.bedtime||'?'}, batterij ${m.battery}%, gewicht ${m.weight||'?'}kg, koffie ${m.coffee} koppen, wakker door: ${m.wakeReason||'?'}, gevoel: ${m.wakeFeeling||'?'}`);}
+    if(e.evening){
+      const ev=e.evening;
+      const energies=[ev.energy1,ev.energy2,ev.energy3].filter(Boolean);
+      const leaks=[ev.leak1,ev.leak2,ev.leak3].filter(Boolean);
+      parts.push(`Avond: activiteiten: ${ev.activities?.join(', ')||'geen'}, werklocatie: ${ev.workLocation||'?'}, buiten: ${ev.outside===true?'ja':ev.outside===false?'nee':'?'}, sociaal: ${ev.social||'?'}, gezond: ${ev.healthyEating===true?'ja':ev.healthyEating===false?'nee':'?'}, alcohol: ${ev.alcohol===true?'ja':ev.alcohol===false?'nee':'?'}, gerookt: ${ev.smoking===true?'ja':ev.smoking===false?'nee':'?'}, cafeïne na 14u: ${ev.lateCaffeine===true?'ja':ev.lateCaffeine===false?'nee':'?'}, schermtijd: ${ev.screenTime||'?'}u, stemming: ${ev.mood||'?'}, stress: ${ev.stress}/10, productiviteit: ${ev.productivity}/10`);
+      if(energies.length)parts.push(`Energiebronnen: ${energies.join(' / ')}`);
+      if(leaks.length)parts.push(`Energielekken: ${leaks.join(' / ')}`);
+    }
+    return parts.join('\n');
+  }).join('\n\n');
+
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:`Je bent een empathische welzijnscoach. Analyseer de dagboekdata en geef een warm, persoonlijk rapport in het Nederlands. Benoem CONCRETE correlaties als je ze ziet (bijv. "Op dagen bij FLX sliep je gemiddeld X minuten minder"). Structureer met emoji-headers: slaap, beweging & buiten, voeding & gewoonten, energie & stemming, werkpatroon, energiebronnen & lekken. Sluit af met 2-3 concrete persoonlijke tips.`,
+        messages:[{role:'user',content:`Check-in data:\n\n${formatted}\n\nMaak een persoonlijk rapport met correlaties en inzichten.`}]
+      })
+    });
+    const result=await resp.json();
+    if(result.error){throw new Error(result.error.message);}
+    const text=result.content?.find(b=>b.type==='text')?.text||'Geen rapport beschikbaar.';
+    const html=text.split('\n\n').map(p=>/^#{1,3} /.test(p)?`<h3>${p.replace(/^#+\s*/,'')}</h3>`:`<p>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</p>`).join('');
+    area.innerHTML=`<div class="card week-summary">${html}</div><button class="btn btn-secondary" onclick="exportJSON()" style="margin-top:0">📥 JSON</button><button class="btn btn-secondary" onclick="exportCSV()">📊 CSV</button>`;
+  } catch(err) {
+    area.innerHTML=`<div class="card"><p style="color:var(--danger)">Fout: ${err.message}</p><p style="font-size:13px;color:var(--text-muted);margin-top:8px">Controleer je API-sleutel in Instellingen.</p></div>`;
+  }
+}
+
+// ─── API KEY ──────────────────────────────────────────────────────────────────
+function saveApiKey() {
+  const k=document.getElementById('apiKey').value.trim();
+  if (!k){document.getElementById('apiStatus').textContent='Voer een geldige sleutel in.';return;}
+  storeApiKey(k);
+  document.getElementById('apiStatus').textContent='✓ API-sleutel opgeslagen';
+  showToast('API-sleutel opgeslagen ✓');
+}
+function toggleApiVisibility() {
+  const inp=document.getElementById('apiKey');
+  inp.type=inp.type==='password'?'text':'password';
+}
+
+// ─── NOTIFICATIONS ────────────────────────────────────────────────────────────
+async function saveNotifSettings() {
+  if(!('Notification'in window)){document.getElementById('notifStatus').textContent='Notificaties worden niet ondersteund.';return;}
+  const perm=await Notification.requestPermission();
+  if(perm!=='granted'){document.getElementById('notifStatus').textContent='⚠️ Notificaties geblokkeerd.';return;}
+  const s={morningTime:document.getElementById('morningNotifTime').value,eveningTime:document.getElementById('eveningNotifTime').value,enabled:true};
+  saveSettings(s);
+  document.getElementById('notifStatus').textContent=`✓ Actief: 🌅 ${s.morningTime} en 🌙 ${s.eveningTime}`;
+  showToast('Herinneringen opgeslagen ✓');
+}
+function scheduleNotifCheck() {
+  setInterval(()=>{
+    const s=getSettings();if(!s.enabled)return;
+    const now=new Date();
+    const hm=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const te=getData()[today()]||{};
+    if(hm===s.morningTime&&!te.morning)new Notification('Energietracker 🌅',{body:'Vergeet je ochtendcheck-in niet!'});
+    if(hm===s.eveningTime&&!te.evening)new Notification('Energietracker 🌙',{body:'Hoe was je dag? Vul je avondcheck-in in.'});
+  },60000);
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
+function exportJSON() {
+  const blob=new Blob([JSON.stringify(getData(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`energietracker_${today()}.json`;a.click();URL.revokeObjectURL(url);
+  showToast('JSON geëxporteerd ✓');
+}
+function exportCSV() {
+  const data=getData(),keys=Object.keys(data).sort();
+  const headers=['datum','bedtijd','uren_geslapen','gewicht','batterij','koffie','wakker_door','wakker_gevoel','activiteiten','werklocatie','buiten','sociaal','gezond_gegeten','alcohol','gerookt','cafeine_na_14','schermtijd','stemming','stress','productiviteit','energiebron1','energiebron2','energiebron3','energielek1','energielek2','energielek3'];
+  const rows=keys.map(d=>{const m=data[d].morning||{},ev=data[d].evening||{};return[d,m.bedtime||'',m.sleepHours||'',m.weight||'',m.battery??'',m.coffee??'',m.wakeReason||'',m.wakeFeeling||'',(ev.activities||[]).join(';'),ev.workLocation||'',ev.outside??'',ev.social||'',ev.healthyEating??'',ev.alcohol??'',ev.smoking??'',ev.lateCaffeine??'',ev.screenTime||'',ev.mood||'',ev.stress||'',ev.productivity||'',ev.energy1||'',ev.energy2||'',ev.energy3||'',ev.leak1||'',ev.leak2||'',ev.leak3||''];});
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`energietracker_${today()}.csv`;a.click();URL.revokeObjectURL(url);
+  showToast('CSV geëxporteerd ✓');
+}
+function clearData() {
+  if(!confirm('Weet je zeker dat je ALLE data wilt wissen?'))return;
+  localStorage.removeItem('et_data');showToast('Data gewist');location.reload();
+}
+</script>
+</body>
+</html>
