@@ -22,12 +22,12 @@
     --safe-top: env(safe-area-inset-top, 0px);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
-  .app { max-width: 680px; margin: 0 auto; padding: 0 0 calc(80px + var(--safe-bottom)); }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 20px; line-height: 1.7; }
+  .app { max-width: 680px; margin: 0 auto; padding: 0 0 calc(100px + var(--safe-bottom)); }
 
-  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: calc(16px + var(--safe-top)) 20px 12px; position: sticky; top: 0; z-index: 100; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: calc(16px + var(--safe-top)) 20px 14px; position: sticky; top: 0; z-index: 100; }
   .header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
-  .header h1 { font-family: 'Lora', serif; font-size: 21px; font-weight: 600; }
+  .header h1 { font-family: 'Lora', serif; font-size: 28px; font-weight: 600; }
   .header-date { font-size: 13px; color: var(--text-muted); }
   .streak-badge { background: var(--accent2-light); color: var(--accent2); border: 1px solid #f0d0a0; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; margin-left: auto; }
   .checkin-status { display: flex; gap: 6px; }
@@ -35,10 +35,17 @@
   .status-pill:hover { border-color: var(--accent); color: var(--accent); }
   .status-pill.done { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
 
+  .header-date { font-size: 16px; color: var(--text-muted); }
+  .streak-badge { background: var(--accent2-light); color: var(--accent2); border: 1px solid #f0d0a0; border-radius: 20px; padding: 5px 14px; font-size: 15px; font-weight: 500; margin-left: auto; }
+  .checkin-status { display: flex; gap: 8px; }
+  .status-pill { flex: 1; padding: 11px 10px; border-radius: 10px; font-size: 15px; font-weight: 500; text-align: center; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text-muted); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .status-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .status-pill.done { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
   .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); background: var(--surface); border-top: 1px solid var(--border); display: flex; z-index: 200; width: 100%; max-width: 680px; padding-bottom: var(--safe-bottom); }
-  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 2px 12px; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; color: var(--text-muted); transition: color 0.15s; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 2px 14px; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-muted); transition: color 0.15s; }
   .nav-btn.active { color: var(--accent); }
-  .nav-btn svg { width: 20px; height: 20px; }
+  .nav-btn svg { width: 26px; height: 26px; }
 
   .content { padding: 16px 14px 0; }
   .section { display: none; }
@@ -47,67 +54,69 @@
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow); }
   .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
   .card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .card-title { font-family: 'Lora', serif; font-size: 16px; font-weight: 600; }
-  .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .card-title { font-family: 'Lora', serif; font-size: 22px; font-weight: 600; }
+  .card-subtitle { font-size: 16px; color: var(--text-muted); margin-top: 2px; }
 
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-  .field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); outline: none; transition: border-color 0.15s; -webkit-appearance: none; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 15px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 18px; font-family: 'DM Sans', sans-serif; font-size: 20px; color: var(--text); outline: none; transition: border-color 0.15s; -webkit-appearance: none; }
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
-  .field textarea { min-height: 72px; resize: vertical; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .field textarea { min-height: 90px; resize: vertical; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
   .field-row .field { margin-bottom: 0; }
 
-  .slider-wrap { position: relative; padding-top: 6px; }
-  .slider-wrap input[type=range] { -webkit-appearance: none; width: 100%; height: 10px; border-radius: 5px; background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct,50%), var(--border) var(--pct,50%)); border: none; padding: 8px 0; cursor: pointer; }
-  .slider-wrap input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; }
+  .slider-wrap { position: relative; padding-top: 44px; margin-bottom: 4px; }
+  .slider-val-bubble { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; font-size: 22px; font-weight: 700; font-family: 'DM Sans', sans-serif; padding: 4px 16px; border-radius: 20px; pointer-events: none; transition: left 0.05s; white-space: nowrap; }
+  .slider-val-bubble::after { content:''; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%); border:7px solid transparent; border-top-color: var(--accent); border-bottom: none; }
+  .slider-wrap input[type=range] { -webkit-appearance: none; width: 100%; height: 18px; border-radius: 9px; background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct,50%), var(--border) var(--pct,50%)); border: none; padding: 0; cursor: pointer; display: block; }
+  .slider-wrap input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 38px; height: 38px; border-radius: 50%; background: var(--accent); border: 4px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.25); cursor: pointer; }
 
   .chip-group { display: flex; flex-wrap: wrap; gap: 7px; }
-  .chip { padding: 8px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 13.5px; cursor: pointer; user-select: none; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
+  .chip { padding: 12px 18px; border-radius: 22px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 17px; cursor: pointer; user-select: none; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
   .chip.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
 
-  .yn-group { display: flex; gap: 8px; }
-  .yn-btn { flex: 1; padding: 11px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
+  .yn-group { display: flex; gap: 10px; }
+  .yn-btn { flex: 1; padding: 15px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 18px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.12s; font-family: 'DM Sans', sans-serif; }
   .yn-btn.yes.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
   .yn-btn.no.active { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
 
-  .energy-field { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .energy-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .energy-field { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .energy-num { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .energy-num.leak { background: var(--danger-light); color: var(--danger); }
-  .energy-field input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
+  .energy-field input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; padding: 13px 16px; font-family: 'DM Sans', sans-serif; font-size: 18px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .energy-field input:focus { border-color: var(--accent); }
 
-  .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .btn { display: block; width: 100%; padding: 18px; border-radius: 14px; border: none; font-family: 'DM Sans', sans-serif; font-size: 19px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-align: center; }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:active { background: #3d6b4a; transform: scale(0.98); }
   .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); margin-top: 8px; }
-  .saved-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--accent-light); color: var(--accent); border: 1px solid #b8d9c0; border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 500; margin-top: 10px; }
-  .divider { height: 1px; background: var(--border); margin: 14px 0; }
-  .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .saved-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--accent-light); color: var(--accent); border: 1px solid #b8d9c0; border-radius: 20px; padding: 6px 16px; font-size: 16px; font-weight: 500; margin-top: 12px; }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .hint { font-size: 15px; color: var(--text-muted); margin-bottom: 10px; }
 
-  .affirmation-box { margin-top:14px; background: linear-gradient(135deg,#e8f0eb,#fef7e6); border: 1px solid #c8d8bc; border-radius: 12px; padding: 16px 18px; text-align: center; animation: fadeIn 0.5s ease; }
+  .affirmation-box { margin-top:16px; background: linear-gradient(135deg,#e8f0eb,#fef7e6); border: 1px solid #c8d8bc; border-radius: 14px; padding: 20px; text-align: center; animation: fadeIn 0.5s ease; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-  .affirmation-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .affirmation-text { font-family: 'Lora', serif; font-size: 16px; color: var(--text); line-height: 1.5; font-style: italic; }
+  .affirmation-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .affirmation-text { font-family: 'Lora', serif; font-size: 20px; color: var(--text); line-height: 1.55; font-style: italic; }
 
-  .history-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
-  .history-date { padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-family: 'Lora', serif; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .history-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+  .history-date { padding: 14px 18px; background: var(--surface2); border-bottom: 1px solid var(--border); font-family: 'Lora', serif; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
   .history-date .chevron { margin-left: auto; transition: transform 0.2s; }
   .history-date.open .chevron { transform: rotate(180deg); }
-  .history-body { padding: 14px 16px; display: none; }
+  .history-body { padding: 16px 18px; display: none; }
   .history-body.open { display: block; }
-  .history-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
-  .history-label { color: var(--text-muted); min-width: 145px; }
+  .history-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 17px; }
+  .history-label { color: var(--text-muted); min-width: 160px; }
   .history-val { color: var(--text); font-weight: 500; }
-  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
-  .tag { padding: 4px 10px; border-radius: 12px; font-size: 12.5px; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag { padding: 6px 12px; border-radius: 12px; font-size: 15px; }
   .tag.green { background: var(--accent-light); color: var(--accent); }
   .tag.red { background: var(--danger-light); color: var(--danger); }
 
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 10px; text-align: center; }
-  .stat-val { font-family: 'Lora', serif; font-size: 22px; font-weight: 600; color: var(--accent); }
-  .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 10px; text-align: center; }
+  .stat-val { font-family: 'Lora', serif; font-size: 26px; font-weight: 600; color: var(--accent); }
+  .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
 
   .heatmap-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
   .heatmap-title { font-family: 'Lora', serif; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
@@ -123,10 +132,10 @@
   .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
   .chart-title { font-family: 'Lora', serif; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
 
-  .week-summary { font-size: 14.5px; line-height: 1.75; }
-  .week-summary h3 { font-family:'Lora',serif;font-size:16px;margin:14px 0 6px;color:var(--accent); }
+  .week-summary { font-size: 17px; line-height: 1.75; }
+  .week-summary h3 { font-family:'Lora',serif;font-size:19px;margin:16px 0 8px;color:var(--accent); }
   .week-summary h3:first-child { margin-top:0; }
-  .week-summary p { margin-bottom:8px; }
+  .week-summary p { margin-bottom:10px; }
 
   .loading-dots span { display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bounce 1.2s infinite ease-in-out; }
   .loading-dots span:nth-child(2){animation-delay:.2s}
@@ -141,15 +150,16 @@
   .api-key-wrap input { padding-right: 44px; }
   .api-key-toggle { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted); }
 
-  .install-banner { background: linear-gradient(135deg, #e8f0eb, #eaf0f8); border: 1px solid #c0d4e0; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px; }
-  .install-banner h3 { font-family:'Lora',serif;font-size:15px;font-weight:600;margin-bottom:8px; }
+  .install-banner { background: linear-gradient(135deg, #e8f0eb, #eaf0f8); border: 1px solid #c0d4e0; border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; }
+  .install-banner h3 { font-family:'Lora',serif;font-size:20px;font-weight:600;margin-bottom:10px; }
   .install-steps { list-style:none;counter-reset:steps; }
-  .install-steps li { counter-increment:steps;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:14px; }
-  .install-steps li::before { content:counter(steps);background:var(--accent);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px; }
+  .install-steps li { counter-increment:steps;display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:18px; }
+  .install-steps li::before { content:counter(steps);background:var(--accent);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;margin-top:2px; }
 
   .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
-  .empty-state .emoji{font-size:40px;margin-bottom:12px;}
-  .toast{position:fixed;bottom:calc(80px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:all 0.3s;z-index:999;white-space:nowrap;}
+  .empty-state .emoji{font-size:48px;margin-bottom:12px;}
+  .empty-state p{font-size:18px;}
+  .toast{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:12px 24px;border-radius:24px;font-size:17px;opacity:0;pointer-events:none;transition:all 0.3s;z-index:999;white-space:nowrap;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   @media(max-width:400px){.field-row{grid-template-columns:1fr;}}
 </style>
@@ -179,16 +189,17 @@
         </div>
 
         <div class="field-row">
-          <div class="field"><label>Bedtijd</label><input type="time" id="bedtime" value="23:00"></div>
           <div class="field"><label>Uren geslapen</label><input type="number" id="sleepHours" min="0" max="14" step="0.5" placeholder="7.5"></div>
+          <div class="field"><label>Gewicht (kg)</label><input type="number" id="weight" min="30" max="250" step="0.1" placeholder="78.4"></div>
         </div>
 
         <div class="field">
-          <label>Batterij-% (slaap-app) — <span id="batteryDisplay">75%</span></label>
-          <div class="slider-wrap"><input type="range" id="batterySlider" min="0" max="100" value="75" oninput="updateSlider('batterySlider','batteryDisplay',this.value,'%')"></div>
+          <label>Batterij-% (slaap-app)</label>
+          <div class="slider-wrap">
+            <div class="slider-val-bubble" id="batteryBubble">75%</div>
+            <input type="range" id="batterySlider" min="0" max="100" value="75" oninput="updateSlider('batterySlider','batteryDisplay',this.value,'%')">
+          </div>
         </div>
-
-        <div class="field"><label>Gewicht (kg)</label><input type="number" id="weight" min="30" max="250" step="0.1" placeholder="bijv. 78.4"></div>
 
         <div class="field">
           <label>Wakker geworden door</label>
@@ -208,11 +219,6 @@
             <div class="chip" onclick="toggleChip(this,'wakeFeeling')">😊 Uitgerust</div>
             <div class="chip" onclick="toggleChip(this,'wakeFeeling')">⚡ Energiek</div>
           </div>
-        </div>
-
-        <div class="field">
-          <label>Koppen koffie / cafeïne — <span id="coffeeDisplay">0</span></label>
-          <div class="slider-wrap"><input type="range" id="coffeeSlider" min="0" max="8" value="0" step="1" oninput="updateSlider('coffeeSlider','coffeeDisplay',this.value,'')"></div>
         </div>
 
         <div class="field"><label>Notities (optioneel)</label><textarea id="morningNotes" placeholder="Dromen, gedachten bij het wakker worden..."></textarea></div>
@@ -246,10 +252,34 @@
           </div>
         </div>
 
-        <div class="field"><label>Werklocatie</label>
+        <div class="field"><label>Werklocatie / dag</label>
           <div class="chip-group" id="workLocation">
             <div class="chip" onclick="toggleChip(this,'workLocation')">🏠 Thuisgewerkt</div>
             <div class="chip" onclick="toggleChip(this,'workLocation')">🏢 Bij FLX</div>
+            <div class="chip" onclick="toggleChip(this,'workLocation')">🌴 Weekend</div>
+            <div class="chip" onclick="toggleChip(this,'workLocation')">🏖️ Vrij</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Koppen koffie / cafeïne</label>
+          <div class="slider-wrap">
+            <div class="slider-val-bubble" id="coffeeBubble">0 koppen</div>
+            <input type="range" id="coffeeSlider" min="0" max="8" value="0" step="1" oninput="updateSlider('coffeeSlider','coffeeDisplay',this.value,'')">
+          </div>
+        </div>
+
+        <div class="field"><label>Wat heb je vanavond gedaan?</label>
+          <div class="chip-group" id="eveningActivity">
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">📺 TV/series</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">📱 Scrollen</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">📚 Gelezen</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">👥 Sociale afspraak</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">🍽️ Uit eten</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">🧘 Ontspannen</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">🎮 Gespeeld</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">🎵 Muziek</div>
+            <div class="chip" onclick="toggleChip(this,'eveningActivity')">🏃 Bewogen</div>
           </div>
         </div>
 
@@ -265,8 +295,23 @@
         </div>
 
         <div class="field"><label>Gezond gegeten?</label><div class="yn-group" id="healthyEating"><div class="yn-btn yes" onclick="toggleYN('healthyEating','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('healthyEating','no')">✗ Nee</div></div></div>
-        <div class="field"><label>Alcohol gedronken?</label><div class="yn-group" id="alcohol"><div class="yn-btn yes" onclick="toggleYN('alcohol','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('alcohol','no')">✗ Nee</div></div></div>
-        <div class="field"><label>Gerookt?</label><div class="yn-group" id="smoking"><div class="yn-btn yes" onclick="toggleYN('smoking','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('smoking','no')">✗ Nee</div></div></div>
+
+        <div class="field">
+          <label>Glazen alcohol</label>
+          <div class="slider-wrap">
+            <div class="slider-val-bubble" id="alcoholBubble">0 glazen</div>
+            <input type="range" id="alcoholSlider" min="0" max="10" value="0" step="1" oninput="updateSlider('alcoholSlider','alcoholDisplay',this.value,'')">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Sigaretten gerookt</label>
+          <div class="slider-wrap">
+            <div class="slider-val-bubble" id="smokingBubble">0 sigaretten</div>
+            <input type="range" id="smokingSlider" min="0" max="20" value="0" step="1" oninput="updateSlider('smokingSlider','smokingDisplay',this.value,'')">
+          </div>
+        </div>
+
         <div class="field"><label>Cafeïne na 14:00?</label><div class="yn-group" id="lateCaffeine"><div class="yn-btn yes" onclick="toggleYN('lateCaffeine','yes')">✓ Ja</div><div class="yn-btn no" onclick="toggleYN('lateCaffeine','no')">✗ Nee</div></div></div>
 
         <div class="field"><label>Schermtijd (uren)</label><input type="number" id="screenTime" min="0" max="24" step="0.5" placeholder="bijv. 4.5"></div>
@@ -281,12 +326,18 @@
           </div>
         </div>
 
-        <div class="field"><label>Stressniveau — <span id="stressDisplay">5</span>/10</label>
-          <div class="slider-wrap"><input type="range" id="stressSlider" min="1" max="10" value="5" oninput="updateSlider('stressSlider','stressDisplay',this.value,'')"></div>
+        <div class="field"><label>Stressniveau</label>
+          <div class="slider-wrap">
+            <div class="slider-val-bubble" id="stressBubble">5 / 10</div>
+            <input type="range" id="stressSlider" min="1" max="10" value="5" oninput="updateSlider('stressSlider','stressDisplay',this.value,'')">
+          </div>
         </div>
 
-        <div class="field"><label>Productiviteitsgevoel — <span id="productivityDisplay">5</span>/10</label>
-          <div class="slider-wrap"><input type="range" id="productivitySlider" min="1" max="10" value="5" oninput="updateSlider('productivitySlider','productivityDisplay',this.value,'')"></div>
+        <div class="field"><label>Productiviteitsgevoel</label>
+          <div class="slider-wrap">
+            <div class="slider-val-bubble" id="productivityBubble">5 / 10</div>
+            <input type="range" id="productivitySlider" min="1" max="10" value="5" oninput="updateSlider('productivitySlider','productivityDisplay',this.value,'')">
+          </div>
         </div>
       </div>
 
@@ -494,18 +545,58 @@ function showAffirmation() {
 }
 
 // ─── SLIDERS ─────────────────────────────────────────────────────────────────
-function updateSlider(sid,did,val,suffix) {
-  document.getElementById(did).textContent=val+suffix;
-  const el=document.getElementById(sid);
-  el.style.setProperty('--pct',((val-el.min)/(el.max-el.min)*100)+'%');
+const SLIDER_LABELS = {
+  batterySlider: v => v + '%',
+  coffeeSlider:  v => v == 0 ? '0 koppen' : v + (v == 1 ? ' kop' : ' koppen'),
+  alcoholSlider: v => v == 0 ? '0 glazen' : v + (v == 1 ? ' glas' : ' glazen'),
+  smokingSlider: v => v == 0 ? '0 sigaretten' : v + (v == 1 ? ' sigaret' : ' sigaretten'),
+  stressSlider:  v => v + ' / 10',
+  productivitySlider: v => v + ' / 10',
+};
+const SLIDER_BUBBLES = {
+  batterySlider: 'batteryBubble',
+  coffeeSlider: 'coffeeBubble',
+  alcoholSlider: 'alcoholBubble',
+  smokingSlider: 'smokingBubble',
+  stressSlider: 'stressBubble',
+  productivitySlider: 'productivityBubble',
+};
+
+function updateSlider(sid, did, val, suffix) {
+  const el = document.getElementById(sid);
+  const pct = ((val - el.min) / (el.max - el.min) * 100);
+  el.style.setProperty('--pct', pct + '%');
+  // legacy display spans (kept for AI report compatibility)
+  const display = document.getElementById(did);
+  if (display) display.textContent = val + suffix;
+  // bubble
+  const bubbleId = SLIDER_BUBBLES[sid];
+  if (bubbleId) {
+    const bubble = document.getElementById(bubbleId);
+    if (bubble) {
+      const label = SLIDER_LABELS[sid] ? SLIDER_LABELS[sid](parseInt(val)) : val + suffix;
+      bubble.textContent = label;
+      // position bubble over thumb
+      const thumbOffset = 19; // half thumb width
+      const trackWidth = el.offsetWidth || 300;
+      const leftPx = (pct / 100) * (trackWidth - thumbOffset * 2) + thumbOffset;
+      bubble.style.left = leftPx + 'px';
+      bubble.style.transform = 'translateX(-50%)';
+    }
+  }
 }
-function initSlider(sid,did,val,suffix) { document.getElementById(sid).value=val; updateSlider(sid,did,val,suffix); }
+function initSlider(sid, did, val, suffix) {
+  document.getElementById(sid).value = val;
+  updateSlider(sid, did, val, suffix);
+}
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('headerDate').textContent = dutchDateLong(today());
   initSlider('batterySlider','batteryDisplay',75,'%');
   initSlider('coffeeSlider','coffeeDisplay',0,'');
+  initSlider('alcoholSlider','alcoholDisplay',0,'');
+  initSlider('smokingSlider','smokingDisplay',0,'');
   initSlider('stressSlider','stressDisplay',5,'');
   initSlider('productivitySlider','productivityDisplay',5,'');
   loadTodayState();
@@ -524,7 +615,6 @@ function loadTodayState() {
     if (m.sleepHours) document.getElementById('sleepHours').value=m.sleepHours;
     if (m.weight) document.getElementById('weight').value=m.weight;
     if (m.battery!=null){document.getElementById('batterySlider').value=m.battery;updateSlider('batterySlider','batteryDisplay',m.battery,'%');}
-    if (m.coffee!=null){document.getElementById('coffeeSlider').value=m.coffee;updateSlider('coffeeSlider','coffeeDisplay',m.coffee,'');}
     if (m.notes) document.getElementById('morningNotes').value=m.notes;
     if (m.wakeFeeling) setChip('wakeFeeling',m.wakeFeeling);
     if (m.wakeReason) setChip('wakeReason',m.wakeReason);
@@ -539,12 +629,14 @@ function loadTodayState() {
     if (ev.stress!=null){document.getElementById('stressSlider').value=ev.stress;updateSlider('stressSlider','stressDisplay',ev.stress,'');}
     if (ev.productivity!=null){document.getElementById('productivitySlider').value=ev.productivity;updateSlider('productivitySlider','productivityDisplay',ev.productivity,'');}
     if (ev.activities) ev.activities.forEach(a=>setChip('activities',a,true));
+    if (ev.eveningActivity) ev.eveningActivity.forEach(a=>setChip('eveningActivity',a,true));
+    if (ev.coffee!=null){document.getElementById('coffeeSlider').value=ev.coffee;updateSlider('coffeeSlider','coffeeDisplay',ev.coffee,'');}
     if (ev.workLocation) setChip('workLocation',ev.workLocation);
     if (ev.social) setChip('social',ev.social);
     if (ev.mood) setChip('mood',ev.mood);
     if (ev.healthyEating!=null) toggleYN('healthyEating',ev.healthyEating?'yes':'no');
-    if (ev.alcohol!=null) toggleYN('alcohol',ev.alcohol?'yes':'no');
-    if (ev.smoking!=null) toggleYN('smoking',ev.smoking?'yes':'no');
+    if (ev.alcohol!=null){document.getElementById('alcoholSlider').value=ev.alcohol;updateSlider('alcoholSlider','alcoholDisplay',ev.alcohol,'');}
+    if (ev.smoking!=null){document.getElementById('smokingSlider').value=ev.smoking;updateSlider('smokingSlider','smokingDisplay',ev.smoking,'');}
     if (ev.outside!=null) toggleYN('outside',ev.outside?'yes':'no');
     if (ev.lateCaffeine!=null) toggleYN('lateCaffeine',ev.lateCaffeine?'yes':'no');
     document.getElementById('eveningSavedMsg').style.display='block';
@@ -605,7 +697,6 @@ function saveMorning() {
     sleepHours:parseFloat(document.getElementById('sleepHours').value)||null,
     weight:parseFloat(document.getElementById('weight').value)||null,
     battery:parseInt(document.getElementById('batterySlider').value),
-    coffee:parseInt(document.getElementById('coffeeSlider').value),
     wakeReason:getChip('wakeReason'), wakeFeeling:getChip('wakeFeeling'),
     notes:document.getElementById('morningNotes').value.trim()
   };
@@ -621,9 +712,13 @@ function saveEvening() {
   const d=getData(); if(!d[today()]) d[today()]={};
   d[today()].evening={
     activities:getChips('activities'), workLocation:getChip('workLocation'),
+    eveningActivity:getChips('eveningActivity'),
+    coffee:parseInt(document.getElementById('coffeeSlider').value),
     outside:getYN('outside'), social:getChip('social'),
-    healthyEating:getYN('healthyEating'), alcohol:getYN('alcohol'),
-    smoking:getYN('smoking'), lateCaffeine:getYN('lateCaffeine'),
+    healthyEating:getYN('healthyEating'),
+    alcohol:parseInt(document.getElementById('alcoholSlider').value),
+    smoking:parseInt(document.getElementById('smokingSlider').value),
+    lateCaffeine:getYN('lateCaffeine'),
     screenTime:parseFloat(document.getElementById('screenTime').value)||null,
     mood:getChip('mood'),
     stress:parseInt(document.getElementById('stressSlider').value),
@@ -673,13 +768,14 @@ function renderHistory() {
     const energies=ev?[ev.energy1,ev.energy2,ev.energy3].filter(Boolean):[];
     const leaks=ev?[ev.leak1,ev.leak2,ev.leak3].filter(Boolean):[];
     const evRows=ev?`<div class="divider"></div>
-      ${ev.activities?.length?`<div class="history-row"><span class="history-label">🏃 Activiteiten</span><span class="history-val">${ev.activities.join(', ')}</span></div>`:''}
-      ${ev.workLocation?`<div class="history-row"><span class="history-label">💼 Werklocatie</span><span class="history-val">${ev.workLocation}</span></div>`:''}
-      ${ev.outside!=null?`<div class="history-row"><span class="history-label">🌳 Buiten</span><span class="history-val">${ev.outside?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.activities?.length?`<div class="history-row"><span class="history-label">🏃 Sport</span><span class="history-val">${ev.activities.join(', ')}</span></div>`:''}
+      ${ev.eveningActivity?.length?`<div class="history-row"><span class="history-label">🌙 Avond</span><span class="history-val">${ev.eveningActivity.join(', ')}</span></div>`:''}
+      ${ev.workLocation?`<div class="history-row"><span class="history-label">💼 Dag/locatie</span><span class="history-val">${ev.workLocation}</span></div>`:''}
+      ${ev.coffee!=null?`<div class="history-row"><span class="history-label">☕ Koffie</span><span class="history-val">${ev.coffee} kop(pen)</span></div>`:''}      ${ev.outside!=null?`<div class="history-row"><span class="history-label">🌳 Buiten</span><span class="history-val">${ev.outside?'✓ Ja':'✗ Nee'}</span></div>`:''}
       ${ev.social?`<div class="history-row"><span class="history-label">👥 Sociaal</span><span class="history-val">${ev.social}</span></div>`:''}
       ${ev.healthyEating!=null?`<div class="history-row"><span class="history-label">🥗 Gezond gegeten</span><span class="history-val">${ev.healthyEating?'✓ Ja':'✗ Nee'}</span></div>`:''}
-      ${ev.alcohol!=null?`<div class="history-row"><span class="history-label">🍷 Alcohol</span><span class="history-val">${ev.alcohol?'✓ Ja':'✗ Nee'}</span></div>`:''}
-      ${ev.smoking!=null?`<div class="history-row"><span class="history-label">🚬 Gerookt</span><span class="history-val">${ev.smoking?'✓ Ja':'✗ Nee'}</span></div>`:''}
+      ${ev.alcohol!=null?`<div class="history-row"><span class="history-label">🍷 Alcohol</span><span class="history-val">${ev.alcohol} ${ev.alcohol==1?'glas':'glazen'}</span></div>`:''}
+      ${ev.smoking!=null?`<div class="history-row"><span class="history-label">🚬 Sigaretten</span><span class="history-val">${ev.smoking} ${ev.smoking==1?'sigaret':'sigaretten'}</span></div>`:''}
       ${ev.lateCaffeine!=null?`<div class="history-row"><span class="history-label">☕ Cafeïne na 14u</span><span class="history-val">${ev.lateCaffeine?'✓ Ja':'✗ Nee'}</span></div>`:''}
       ${ev.screenTime?`<div class="history-row"><span class="history-label">📱 Schermtijd</span><span class="history-val">${ev.screenTime}u</span></div>`:''}
       ${ev.mood?`<div class="history-row"><span class="history-label">😊 Stemming</span><span class="history-val">${ev.mood}</span></div>`:''}
@@ -763,7 +859,7 @@ async function generateWeekReport() {
       const ev=e.evening;
       const energies=[ev.energy1,ev.energy2,ev.energy3].filter(Boolean);
       const leaks=[ev.leak1,ev.leak2,ev.leak3].filter(Boolean);
-      parts.push(`Avond: activiteiten: ${ev.activities?.join(', ')||'geen'}, werklocatie: ${ev.workLocation||'?'}, buiten: ${ev.outside===true?'ja':ev.outside===false?'nee':'?'}, sociaal: ${ev.social||'?'}, gezond: ${ev.healthyEating===true?'ja':ev.healthyEating===false?'nee':'?'}, alcohol: ${ev.alcohol===true?'ja':ev.alcohol===false?'nee':'?'}, gerookt: ${ev.smoking===true?'ja':ev.smoking===false?'nee':'?'}, cafeïne na 14u: ${ev.lateCaffeine===true?'ja':ev.lateCaffeine===false?'nee':'?'}, schermtijd: ${ev.screenTime||'?'}u, stemming: ${ev.mood||'?'}, stress: ${ev.stress}/10, productiviteit: ${ev.productivity}/10`);
+      parts.push(`Avond: sport/beweging: ${ev.activities?.join(', ')||'geen'}, avondactiviteit: ${ev.eveningActivity?.join(', ')||'?'}, werklocatie: ${ev.workLocation||'?'}, koffie: ${ev.coffee??'?'} koppen, buiten: ${ev.outside===true?'ja':ev.outside===false?'nee':'?'}, sociaal: ${ev.social||'?'}, gezond: ${ev.healthyEating===true?'ja':ev.healthyEating===false?'nee':'?'}, alcohol: ${ev.alcohol===true?'ja':ev.alcohol===false?'nee':'?'}, gerookt: ${ev.smoking===true?'ja':ev.smoking===false?'nee':'?'}, cafeïne na 14u: ${ev.lateCaffeine===true?'ja':ev.lateCaffeine===false?'nee':'?'}, schermtijd: ${ev.screenTime||'?'}u, stemming: ${ev.mood||'?'}, stress: ${ev.stress}/10, productiviteit: ${ev.productivity}/10`);
       if(energies.length)parts.push(`Energiebronnen: ${energies.join(' / ')}`);
       if(leaks.length)parts.push(`Energielekken: ${leaks.join(' / ')}`);
     }
