@@ -611,7 +611,6 @@ function loadTodayState() {
   if (!entry) return;
   if (entry.morning) {
     const m=entry.morning;
-    if (m.bedtime) document.getElementById('bedtime').value=m.bedtime;
     if (m.sleepHours) document.getElementById('sleepHours').value=m.sleepHours;
     if (m.weight) document.getElementById('weight').value=m.weight;
     if (m.battery!=null){document.getElementById('batterySlider').value=m.battery;updateSlider('batterySlider','batteryDisplay',m.battery,'%');}
@@ -693,7 +692,7 @@ function showSection(id) {
 function saveMorning() {
   const d=getData(); if(!d[today()]) d[today()]={};
   d[today()].morning={
-    bedtime:document.getElementById('bedtime').value,
+    bedtime: null,
     sleepHours:parseFloat(document.getElementById('sleepHours').value)||null,
     weight:parseFloat(document.getElementById('weight').value)||null,
     battery:parseInt(document.getElementById('batterySlider').value),
@@ -757,7 +756,6 @@ function renderHistory() {
   document.getElementById('historyList').innerHTML=keys.map(date=>{
     const e=data[date],m=e.morning,ev=e.evening;
     const mRows=m?`
-      <div class="history-row"><span class="history-label">🛏 Bedtijd</span><span class="history-val">${m.bedtime||'–'}</span></div>
       <div class="history-row"><span class="history-label">😴 Geslapen</span><span class="history-val">${m.sleepHours?m.sleepHours+'u':'–'}</span></div>
       <div class="history-row"><span class="history-label">⚖️ Gewicht</span><span class="history-val">${m.weight?m.weight+' kg':'–'}</span></div>
       <div class="history-row"><span class="history-label">🔋 Batterij</span><span class="history-val">${m.battery!=null?m.battery+'%':'–'}</span></div>
@@ -854,7 +852,7 @@ async function generateWeekReport() {
 
   const formatted=entries.map(([date,e])=>{
     const parts=[`📅 ${dutchDateLong(date)}`];
-    if(e.morning){const m=e.morning;parts.push(`Ochtend: slaap ${m.sleepHours||'?'}u, bedtijd ${m.bedtime||'?'}, batterij ${m.battery}%, gewicht ${m.weight||'?'}kg, koffie ${m.coffee} koppen, wakker door: ${m.wakeReason||'?'}, gevoel: ${m.wakeFeeling||'?'}`);}
+    if(e.morning){const m=e.morning;parts.push(`Ochtend: slaap ${m.sleepHours||'?'}u, batterij ${m.battery}%, gewicht ${m.weight||'?'}kg, koffie ${m.coffee} koppen, wakker door: ${m.wakeReason||'?'}, gevoel: ${m.wakeFeeling||'?'}`);}
     if(e.evening){
       const ev=e.evening;
       const energies=[ev.energy1,ev.energy2,ev.energy3].filter(Boolean);
@@ -928,8 +926,8 @@ function exportJSON() {
 }
 function exportCSV() {
   const data=getData(),keys=Object.keys(data).sort();
-  const headers=['datum','bedtijd','uren_geslapen','gewicht','batterij','koffie','wakker_door','wakker_gevoel','activiteiten','werklocatie','buiten','sociaal','gezond_gegeten','alcohol','gerookt','cafeine_na_14','schermtijd','stemming','stress','productiviteit','energiebron1','energiebron2','energiebron3','energielek1','energielek2','energielek3'];
-  const rows=keys.map(d=>{const m=data[d].morning||{},ev=data[d].evening||{};return[d,m.bedtime||'',m.sleepHours||'',m.weight||'',m.battery??'',m.coffee??'',m.wakeReason||'',m.wakeFeeling||'',(ev.activities||[]).join(';'),ev.workLocation||'',ev.outside??'',ev.social||'',ev.healthyEating??'',ev.alcohol??'',ev.smoking??'',ev.lateCaffeine??'',ev.screenTime||'',ev.mood||'',ev.stress||'',ev.productivity||'',ev.energy1||'',ev.energy2||'',ev.energy3||'',ev.leak1||'',ev.leak2||'',ev.leak3||''];});
+  const headers=['datum','uren_geslapen','gewicht','batterij','koffie','wakker_door','wakker_gevoel','activiteiten','werklocatie','buiten','sociaal','gezond_gegeten','alcohol_glazen','sigaretten','cafeine_na_14','schermtijd','stemming','stress','productiviteit','energiebron1','energiebron2','energiebron3','energielek1','energielek2','energielek3'];
+  const rows=keys.map(d=>{const m=data[d].morning||{},ev=data[d].evening||{};return[d,m.sleepHours||'',m.weight||'',m.battery??'',m.coffee??'',m.wakeReason||'',m.wakeFeeling||'',(ev.activities||[]).join(';'),ev.workLocation||'',ev.outside??'',ev.social||'',ev.healthyEating??'',ev.alcohol??'',ev.smoking??'',ev.lateCaffeine??'',ev.screenTime||'',ev.mood||'',ev.stress||'',ev.productivity||'',ev.energy1||'',ev.energy2||'',ev.energy3||'',ev.leak1||'',ev.leak2||'',ev.leak3||''];});
   const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`energietracker_${today()}.csv`;a.click();URL.revokeObjectURL(url);
   showToast('CSV geëxporteerd ✓');
